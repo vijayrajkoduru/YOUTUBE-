@@ -112,5 +112,8 @@ def comments_page():
 
 
 if __name__ == "__main__":
-    # debug=True auto-reloads when you edit files and shows helpful errors.
-    app.run(debug=True, port=5000)
+    # When hosted online, the host tells us which port to use via $PORT.
+    # On your own computer it falls back to 5000.
+    port = int(os.environ.get("PORT", 5000))
+    # host="0.0.0.0" lets the hosting service expose the site to the internet.
+    app.run(host="0.0.0.0", port=port)

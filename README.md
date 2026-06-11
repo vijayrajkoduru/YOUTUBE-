@@ -67,6 +67,10 @@ Then open **http://127.0.0.1:5000** in your browser. Click between the four
 tools at the top. The SEO Generator and A/B Tracker work even before you add an
 API key; the Channel Report and Comments pages need the key from Step 2.
 
+> 📱 **On an iPad, iPhone, or Chromebook?** You can't run Python there, but you
+> can host the site online for free and open it in your browser. See
+> [`docs/OPEN-ON-IPAD.md`](docs/OPEN-ON-IPAD.md).
+
 ### Option B — The terminal menu
 A text menu in the terminal, no browser needed.
 ```bash

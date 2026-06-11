@@ -1,0 +1,17 @@
+# Tells Render.com how to run this website automatically.
+# You don't edit this — Render reads it when you connect your GitHub repo.
+services:
+  - type: web
+    name: youtube-growth-toolkit
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn web.app:app
+    envVars:
+      # Add your real values in the Render dashboard (Environment tab),
+      # NOT here. These two are only needed for the Channel Report and
+      # Comments pages; the SEO and A/B tools work without them.
+      - key: YOUTUBE_API_KEY
+        sync: false
+      - key: MY_CHANNEL_ID
+        sync: false
