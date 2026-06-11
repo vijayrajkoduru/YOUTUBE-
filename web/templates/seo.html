@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}SEO Generator{% endblock %}
+{% block content %}
+<h1>🔍 SEO Generator</h1>
+<p class="lead">Enter what your video is about. Edit the results so they sound like you.</p>
+
+<form method="post" class="stack">
+  <label>Video topic
+    <input type="text" name="topic" placeholder="e.g. meal prep" required
+           value="{{ result.topic if result else '' }}">
+  </label>
+  <label>3 things you cover (comma-separated)
+    <input type="text" name="points" placeholder="saving time, cheap ingredients, freezer tips">
+  </label>
+  <button type="submit">Generate</button>
+</form>
+
+{% if result %}
+<h2>Title options</h2>
+<ol class="titles">
+  {% for t in result.titles %}<li>{{ t }}</li>{% endfor %}
+</ol>
+
+<h2>Description</h2>
+<textarea readonly rows="10">{{ result.description }}</textarea>
+
+<h2>Tags</h2>
+<textarea readonly rows="3">{{ result.tags }}</textarea>
+{% endif %}
+{% endblock %}

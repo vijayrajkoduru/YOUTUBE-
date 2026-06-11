@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}YouTube Growth Toolkit{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('home') }}">🎬 Growth Toolkit</a>
+    <nav>
+      <a href="{{ url_for('report') }}">Channel Report</a>
+      <a href="{{ url_for('seo_page') }}">SEO Generator</a>
+      <a href="{{ url_for('experiments_page') }}">A/B Tracker</a>
+      <a href="{{ url_for('comments_page') }}">Comments</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    Uses YouTube's official API only — no bots, no fake views, no banned-account risk.
+  </footer>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Channel Report{% endblock %}
+{% block content %}
+<h1>📊 Channel Report</h1>
+
+{% if problems %}
+<div class="alert warn">
+  <strong>Add your API key and channel ID first.</strong>
+  <ul>{% for p in problems %}<li>{{ p }}</li>{% endfor %}</ul>
+</div>
+{% elif error %}
+<div class="alert warn"><strong>Couldn't load data:</strong> {{ error }}</div>
+{% elif stats %}
+<div class="stat-row">
+  <div class="stat"><span>{{ "{:,}".format(stats.subscribers) }}</span>Subscribers</div>
+  <div class="stat"><span>{{ "{:,}".format(stats.total_views) }}</span>Total views</div>
+  <div class="stat"><span>{{ "{:,}".format(stats.video_count) }}</span>Videos</div>
+</div>
+<h2>{{ stats.title }} — recent videos</h2>
+<table>
+  <thead>
+    <tr><th>Title</th><th>Date</th><th>Views</th><th>Likes</th><th>Comments</th><th>Engagement</th></tr>
+  </thead>
+  <tbody>
+    {% for v in videos %}
+    <tr>
+      <td>{{ v.title }}</td>
+      <td>{{ v.published }}</td>
+      <td>{{ "{:,}".format(v.views) }}</td>
+      <td>{{ "{:,}".format(v.likes) }}</td>
+      <td>{{ "{:,}".format(v.comments) }}</td>
+      <td>{{ v.engagement }}%</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="tip">💡 Your highest-engagement video is your audience telling you what
+to make more of. Lean into that topic and format.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Your YouTube Growth Dashboard</h1>
+<p class="lead">
+  Real, safe tools to grow your channel. Pick one to get started.
+</p>
+
+{% if problems %}
+<div class="alert warn">
+  <strong>⚠️ Setup not finished yet:</strong>
+  <ul>
+    {% for p in problems %}<li>{{ p }}</li>{% endfor %}
+  </ul>
+  <p>Open <code>README.md</code> → "Step 2: Get your API key" to fix this.
+     The SEO Generator and A/B Tracker still work without it.</p>
+</div>
+{% else %}
+<div class="alert ok">✅ Setup looks good — all tools are ready.</div>
+{% endif %}
+
+<div class="cards">
+  <a class="card" href="{{ url_for('report') }}">
+    <h3>📊 Channel Report</h3>
+    <p>Your subscribers, views, and how each recent video performed.</p>
+  </a>
+  <a class="card" href="{{ url_for('seo_page') }}">
+    <h3>🔍 SEO Generator</h3>
+    <p>Title ideas, a ready description, and tags for any video topic.</p>
+  </a>
+  <a class="card" href="{{ url_for('experiments_page') }}">
+    <h3>🧪 A/B Tracker</h3>
+    <p>Log thumbnail/title experiments and compare click-through rate.</p>
+  </a>
+  <a class="card" href="{{ url_for('comments_page') }}">
+    <h3>💬 Comments</h3>
+    <p>Pull a video's comments so you can reply quickly.</p>
+  </a>
+</div>
+{% endblock %}

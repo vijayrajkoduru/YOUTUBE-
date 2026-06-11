@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}A/B Tracker{% endblock %}
+{% block content %}
+<h1>🧪 Thumbnail / Title A/B Tracker</h1>
+<p class="lead">Log two ideas, publish one, then compare click-through rate later.</p>
+
+<form method="post" class="stack">
+  <label>Video title
+    <input type="text" name="video" placeholder="My meal prep video" required>
+  </label>
+  <div class="grid2">
+    <label>Variant label
+      <input type="text" name="variant" placeholder="A" required>
+    </label>
+    <label>Hook / title to test
+      <input type="text" name="hook_title" placeholder="You're Meal Prepping Wrong">
+    </label>
+  </div>
+  <label>Thumbnail idea
+    <input type="text" name="thumbnail_idea" placeholder="red background, shocked face, '5 MISTAKES'">
+  </label>
+  <button type="submit">Save experiment</button>
+</form>
+
+<h2>Saved experiments</h2>
+{% if experiments %}
+<table>
+  <thead>
+    <tr><th>Date</th><th>Video</th><th>Variant</th><th>Thumbnail idea</th><th>Hook</th><th>CTR</th></tr>
+  </thead>
+  <tbody>
+    {% for e in experiments %}
+    <tr>
+      <td>{{ e.date }}</td>
+      <td>{{ e.video }}</td>
+      <td>{{ e.variant }}</td>
+      <td>{{ e.thumbnail_idea }}</td>
+      <td>{{ e.hook_title }}</td>
+      <td>{{ (e.ctr_percent ~ '%') if e.ctr_percent is not none else 'pending' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="tip">💡 Fill in real CTR from YouTube Studio → Analytics → Reach a few
+days after publishing (edit <code>data/experiments.json</code> or use the
+terminal app's <code>record_result</code>).</p>
+{% else %}
+<p>No experiments yet. Add your first one above.</p>
+{% endif %}
+{% endblock %}

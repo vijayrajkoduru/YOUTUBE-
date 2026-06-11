@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Comments{% endblock %}
+{% block content %}
+<h1>💬 Read Video Comments</h1>
+
+{% if problems %}
+<div class="alert warn">
+  <strong>Add your API key first to read comments.</strong>
+  <ul>{% for p in problems %}<li>{{ p }}</li>{% endfor %}</ul>
+</div>
+{% else %}
+<form method="post" class="stack">
+  <label>Video ID (the part after <code>watch?v=</code> in the URL)
+    <input type="text" name="video_id" placeholder="dQw4w9WgXcQ" required value="{{ video_id }}">
+  </label>
+  <button type="submit">Load comments</button>
+</form>
+
+{% if error %}
+<div class="alert warn"><strong>Couldn't load comments:</strong> {{ error }}</div>
+{% elif comments is not none %}
+  {% if comments %}
+  <ul class="comments">
+    {% for c in comments %}
+    <li><span class="likes">♥ {{ c.likes }}</span>
+      <strong>{{ c.author }}</strong>: {{ c.text|safe }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No comments found (or comments are disabled on that video).</p>
+  {% endif %}
+{% endif %}
+{% endif %}
+{% endblock %}

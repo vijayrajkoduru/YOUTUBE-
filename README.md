@@ -56,25 +56,44 @@ the metrics that genuinely grow a channel, and nothing in it can get you banned.
 
 ## Run it
 
+You can use this project two ways. They share the same backend code in `src/`.
+
+### Option A — The website (recommended)
+A dashboard you open in your browser.
+```bash
+python web/app.py
+```
+Then open **http://127.0.0.1:5000** in your browser. Click between the four
+tools at the top. The SEO Generator and A/B Tracker work even before you add an
+API key; the Channel Report and Comments pages need the key from Step 2.
+
+### Option B — The terminal menu
+A text menu in the terminal, no browser needed.
 ```bash
 python main.py
 ```
-
-Pick a number from the menu and follow the prompts. Start with option **1** to
-confirm your setup works.
+Pick a number and follow the prompts.
 
 ---
 
 ## Project layout
 
 ```
-main.py          The menu you run
+web/             The website frontend (Flask app + HTML + CSS)
+  app.py            connects the browser to the backend tools
+  templates/        the HTML pages you see
+  static/style.css  the styling
+main.py          The terminal menu (alternative to the website)
 config.py        Loads your settings from .env
-src/             The four tools (see docs/ARCHITECTURE.md)
+src/             The backend: the four tools (see docs/ARCHITECTURE.md)
 templates/       Fill-in-the-blank docs for your video workflow
 docs/            ROADMAP.md (start here) + ARCHITECTURE.md
 data/            Files the tools save locally
 ```
+
+**Front and back, end to end:** the browser (`web/templates/*.html`) →
+the Flask server (`web/app.py`) → the backend tools (`src/`) →
+YouTube's official API and your local data files.
 
 ## Safe by design
 
