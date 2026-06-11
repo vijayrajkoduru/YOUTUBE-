@@ -22,7 +22,11 @@ body {
   padding: 14px 24px; background: #fff; border-bottom: 1px solid var(--line);
   flex-wrap: wrap;
 }
-.brand { font-weight: 700; font-size: 18px; text-decoration: none; color: var(--dark); }
+.brand {
+  font-weight: 700; font-size: 18px; text-decoration: none; color: var(--dark);
+  display: inline-flex; align-items: center; gap: 9px;
+}
+.brand .logo { display: block; flex: none; }
 .topbar nav { display: flex; gap: 18px; flex-wrap: wrap; }
 .topbar nav a { text-decoration: none; color: var(--gray); font-size: 15px; }
 .topbar nav a:hover { color: var(--red); }

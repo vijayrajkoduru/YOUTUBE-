@@ -5,10 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}YouTube Growth Toolkit{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="{{ url_for('home') }}">🎬 Growth Toolkit</a>
+    <a class="brand" href="{{ url_for('home') }}">
+      <!-- Built-in play-button logo: a red rounded square with a white triangle. -->
+      <svg class="logo" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="#ff0033"></rect>
+        <polygon points="12,9 24,16 12,23" fill="#ffffff"></polygon>
+      </svg>
+      <span>Growth Toolkit</span>
+    </a>
     <nav>
       <a href="{{ url_for('report') }}">Channel Report</a>
       <a href="{{ url_for('seo_page') }}">SEO Generator</a>
