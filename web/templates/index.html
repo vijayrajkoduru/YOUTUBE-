@@ -55,6 +55,14 @@
     <h3>📝 AI Script</h3>
     <p>Draft a full video script from a topic (needs a Claude API key).</p>
   </a>
+  <a class="card" href="{{ url_for('voiceover_page') }}">
+    <h3>🔊 Voiceover</h3>
+    <p>Turn a script into a spoken MP3 for faceless videos.</p>
+  </a>
+  <a class="card" href="{{ url_for('thumbnail_page') }}">
+    <h3>🖼️ Thumbnail Maker</h3>
+    <p>Generate a clean 1280×720 thumbnail from text.</p>
+  </a>
 </div>
 
 {% if not logged_in %}

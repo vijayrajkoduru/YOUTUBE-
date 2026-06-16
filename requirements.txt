@@ -18,3 +18,9 @@ gunicorn==22.0.0
 
 # Claude API — powers the AI Ideas and Script tools
 anthropic==0.69.0
+
+# Thumbnail image generation
+Pillow==10.4.0
+
+# Free text-to-speech for the Voiceover tool
+gTTS==2.5.3

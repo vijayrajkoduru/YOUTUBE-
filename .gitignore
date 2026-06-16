@@ -14,6 +14,9 @@ env/
 
 # Local data the tools generate
 data/*.json
+data/thumbnails/
+data/voiceovers/
+data/uploads/
 !data/.gitkeep
 
 # OS / editor noise

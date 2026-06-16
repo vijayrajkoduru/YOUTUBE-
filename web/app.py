@@ -9,6 +9,7 @@ This is the "glue" between the front (HTML pages you see) and the back
 """
 import os
 import sys
+import time
 
 # Make the project root importable so "from src import ..." works when you
 # run this file directly. (Beginner-friendly: no extra setup needed.)
@@ -16,7 +17,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, send_from_directory, url_for
 
 import config
 from src import ab_testing, auth, seo
@@ -148,6 +149,49 @@ def script_page():
             error = str(e)
     return render_template("script.html", script=script, error=error,
                            topic=topic, minutes=minutes)
+
+
+@app.route("/thumbnail", methods=["GET", "POST"])
+def thumbnail_page():
+    """Generate a thumbnail image from text (offline, no key)."""
+    image_url = error = None
+    if request.method == "POST":
+        try:
+            from src import thumbnail
+            thumbnail.make_thumbnail(
+                title=request.form.get("title", "").strip(),
+                subtitle=request.form.get("subtitle", "").strip(),
+                color=request.form.get("color", "red"),
+            )
+            # Cache-buster so the browser shows the newest render.
+            image_url = url_for("generated_file", kind="thumbnails",
+                                name="thumbnail.png") + f"?t={int(time.time())}"
+        except Exception as e:
+            error = str(e)
+    return render_template("thumbnail.html", image_url=image_url, error=error)
+
+
+@app.route("/voiceover", methods=["GET", "POST"])
+def voiceover_page():
+    """Turn script text into an MP3 voiceover (needs internet; no key)."""
+    audio_url = error = None
+    if request.method == "POST":
+        try:
+            from src import voiceover
+            voiceover.make_voiceover(request.form.get("text", "").strip())
+            audio_url = url_for("generated_file", kind="voiceovers",
+                                name="voiceover.mp3") + f"?t={int(time.time())}"
+        except Exception as e:
+            error = str(e)
+    return render_template("voiceover.html", audio_url=audio_url, error=error)
+
+
+@app.route("/generated/<kind>/<path:name>")
+def generated_file(kind, name):
+    """Serves files the tools create (thumbnails, voiceovers)."""
+    if kind not in ("thumbnails", "voiceovers"):
+        return "Not found", 404
+    return send_from_directory(os.path.join(ROOT, "data", kind), name)
 
 
 @app.route("/status")

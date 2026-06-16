@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Voiceover{% endblock %}
+{% block content %}
+<h1>🔊 Voiceover (Text-to-Speech)</h1>
+<p class="lead">Paste your script and get a spoken MP3 — good for faceless videos.</p>
+<div class="alert ok">Free voice, no API key. Needs an internet connection. You can
+upgrade to a higher-quality paid voice later by editing <code>src/voiceover.py</code>.</div>
+
+<form method="post" class="stack">
+  <label>Script text
+    <textarea name="text" rows="8" required placeholder="Paste your script from the Script tool..."></textarea>
+  </label>
+  <button type="submit">Generate voiceover</button>
+</form>
+
+{% if error %}
+<div class="alert warn"><strong>Couldn't generate audio:</strong> {{ error }}</div>
+{% elif audio_url %}
+<h2>Your voiceover</h2>
+<audio controls src="{{ audio_url }}" style="width:100%"></audio>
+<p><a href="{{ audio_url }}" download="voiceover.mp3">⬇️ Download MP3</a></p>
+{% endif %}
+{% endblock %}

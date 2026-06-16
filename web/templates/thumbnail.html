@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Thumbnail Maker{% endblock %}
+{% block content %}
+<h1>🖼️ Thumbnail Maker</h1>
+<p class="lead">Make a clean 1280×720 thumbnail. Refine it in Canva afterward if you like.</p>
+
+<form method="post" class="stack">
+  <label>Big text (the title on the thumbnail)
+    <input type="text" name="title" required placeholder="5 MEAL PREP MISTAKES">
+  </label>
+  <label>Small text (optional)
+    <input type="text" name="subtitle" placeholder="#3 surprised me">
+  </label>
+  <label>Color
+    <select name="color">
+      <option value="red">YouTube red</option>
+      <option value="dark">Dark + gold</option>
+      <option value="blue">Blue</option>
+      <option value="green">Green</option>
+    </select>
+  </label>
+  <button type="submit">Generate thumbnail</button>
+</form>
+
+{% if error %}
+<div class="alert warn"><strong>Couldn't make the thumbnail:</strong> {{ error }}</div>
+{% elif image_url %}
+<h2>Your thumbnail</h2>
+<img src="{{ image_url }}" alt="thumbnail" style="max-width:100%;border:1px solid var(--line);border-radius:8px">
+<p><a href="{{ image_url }}" download="thumbnail.png">⬇️ Download</a></p>
+{% endif %}
+{% endblock %}
