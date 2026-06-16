@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}System Check{% endblock %}
+{% block content %}
+<h1>🔌 System Check</h1>
+<p class="lead">Verifies your credentials and connections, and shows what's ready.</p>
+
+<h2>Connectivity</h2>
+<table>
+  <thead><tr><th>Check</th><th>Status</th><th>What it's for</th></tr></thead>
+  <tbody>
+    {% for c in checks %}
+    <tr>
+      <td>{{ c.name }}</td>
+      <td>{% if c.ok %}<span class="ok-dot">✅ connected</span>{% else %}<span class="bad-dot">❌ missing</span>{% endif %}</td>
+      <td>{{ c.detail }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Feature readiness</h2>
+<table>
+  <thead><tr><th>Feature</th><th>Ready?</th></tr></thead>
+  <tbody>
+    {% for fr in features %}
+    <tr>
+      <td>{{ fr.feature }}</td>
+      <td>{% if fr.ready %}✅ ready{% else %}⚠️ needs setup{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p class="tip">💡 Missing items: add API key/channel ID in <code>.env</code>, and run
+<code>python authorize.py</code> to log in (see <code>docs/OAUTH-SETUP.md</code>).</p>
+{% endblock %}

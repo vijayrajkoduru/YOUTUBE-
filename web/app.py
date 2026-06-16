@@ -115,6 +115,15 @@ def comments_page():
     )
 
 
+@app.route("/status")
+def status_page():
+    """System Check: verifies credentials/connectivity and feature readiness."""
+    from src import healthcheck
+    checks = healthcheck.run_checks()
+    features = healthcheck.feature_readiness(checks)
+    return render_template("status.html", checks=checks, features=features)
+
+
 @app.route("/analytics")
 def analytics_page():
     """Your PRIVATE channel analytics (needs OAuth login)."""

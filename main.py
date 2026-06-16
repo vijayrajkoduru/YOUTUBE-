@@ -18,6 +18,7 @@ def menu():
     print("--- needs login (run authorize.py once) ---")
     print("6. Private analytics (watch time + retention)")
     print("7. Review queue (your private/scheduled videos)")
+    print("8. System check (verify everything is connected)")
     print("0. Quit")
     return input("\nPick a number: ").strip()
 
@@ -36,6 +37,17 @@ def do_analytics():
     print(f"  Watch time: {stats['watch_time_minutes']:,} minutes")
     print(f"  Avg. percentage viewed (retention): {stats['avg_view_percentage']}%")
     print(f"  New subscribers: {stats['subscribers_gained']:,}")
+
+
+def do_status():
+    from src import healthcheck
+    print("\n--- Connectivity ---")
+    for c in healthcheck.run_checks():
+        mark = "OK " if c["ok"] else "-- "
+        print(f"  [{mark}] {c['name']}: {c['detail']}")
+    print("\n--- Feature readiness ---")
+    for fr in healthcheck.feature_readiness():
+        print(f"  {'ready    ' if fr['ready'] else 'needs setup'}  {fr['feature']}")
 
 
 def do_queue():
@@ -123,6 +135,7 @@ def main():
         "5": do_comments,
         "6": do_analytics,
         "7": do_queue,
+        "8": do_status,
     }
 
     while True:
