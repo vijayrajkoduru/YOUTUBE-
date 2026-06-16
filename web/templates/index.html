@@ -47,6 +47,14 @@
     <h3>🗂️ Review Queue</h3>
     <p>Approve and publish (or schedule) your private videos.</p>
   </a>
+  <a class="card" href="{{ url_for('ideas_page') }}">
+    <h3>💡 AI Ideas</h3>
+    <p>Get video ideas for your niche (needs a Claude API key).</p>
+  </a>
+  <a class="card" href="{{ url_for('script_page') }}">
+    <h3>📝 AI Script</h3>
+    <p>Draft a full video script from a topic (needs a Claude API key).</p>
+  </a>
 </div>
 
 {% if not logged_in %}

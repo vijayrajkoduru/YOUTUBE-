@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Script Writer{% endblock %}
+{% block content %}
+<h1>📝 AI Script Writer</h1>
+<p class="lead">Draft a full video script. Always edit it so it sounds like you.</p>
+
+<form method="post" class="stack">
+  <label>Video topic
+    <input type="text" name="topic" required placeholder="5 meal prep mistakes beginners make"
+           value="{{ topic or '' }}">
+  </label>
+  <div class="grid2">
+    <label>Length (minutes)
+      <input type="text" name="minutes" value="{{ minutes or 8 }}">
+    </label>
+    <label>Tone / style
+      <input type="text" name="style" placeholder="energetic and friendly">
+    </label>
+  </div>
+  <button type="submit">Write script</button>
+</form>
+
+{% if error %}
+<div class="alert warn"><strong>Couldn't write the script:</strong> {{ error }}</div>
+{% elif script %}
+<h2>Script for "{{ topic }}"</h2>
+<textarea readonly rows="24">{{ script }}</textarea>
+{% endif %}
+{% endblock %}

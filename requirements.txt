@@ -15,3 +15,6 @@ Flask==3.0.3
 
 # Production web server used when the site is hosted online
 gunicorn==22.0.0
+
+# Claude API — powers the AI Ideas and Script tools
+anthropic==0.69.0

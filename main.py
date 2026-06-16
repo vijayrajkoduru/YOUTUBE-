@@ -15,6 +15,8 @@ def menu():
     print("3. Track a thumbnail/title experiment")
     print("4. See your saved experiments")
     print("5. Read comments on a video (to reply faster)")
+    print("--- needs a Claude API key ---")
+    print("9. AI video ideas for your niche")
     print("--- needs login (run authorize.py once) ---")
     print("6. Private analytics (watch time + retention)")
     print("7. Review queue (your private/scheduled videos)")
@@ -37,6 +39,14 @@ def do_analytics():
     print(f"  Watch time: {stats['watch_time_minutes']:,} minutes")
     print(f"  Avg. percentage viewed (retention): {stats['avg_view_percentage']}%")
     print(f"  New subscribers: {stats['subscribers_gained']:,}")
+
+
+def do_ideas():
+    topic = input("Your channel niche: ").strip()
+    from src import ai
+    print("\nThinking...\n")
+    for idea in ai.generate_ideas(topic, count=10):
+        print(f"  • {idea}")
 
 
 def do_status():
@@ -136,6 +146,7 @@ def main():
         "6": do_analytics,
         "7": do_queue,
         "8": do_status,
+        "9": do_ideas,
     }
 
     while True:

@@ -115,6 +115,41 @@ def comments_page():
     )
 
 
+@app.route("/ideas", methods=["GET", "POST"])
+def ideas_page():
+    """AI video-idea generator (Claude API)."""
+    ideas = error = topic = None
+    if request.method == "POST":
+        topic = request.form.get("topic", "").strip()
+        try:
+            from src import ai
+            ideas = ai.generate_ideas(topic, count=10)
+        except Exception as e:
+            error = str(e)
+    return render_template("ideas.html", ideas=ideas, error=error, topic=topic)
+
+
+@app.route("/script", methods=["GET", "POST"])
+def script_page():
+    """AI script writer (Claude API)."""
+    script = error = topic = None
+    minutes = 8
+    if request.method == "POST":
+        topic = request.form.get("topic", "").strip()
+        try:
+            minutes = int(request.form.get("minutes", "8") or 8)
+        except ValueError:
+            minutes = 8
+        style = request.form.get("style", "").strip() or "energetic and friendly"
+        try:
+            from src import ai
+            script = ai.generate_script(topic, minutes=minutes, style=style)
+        except Exception as e:
+            error = str(e)
+    return render_template("script.html", script=script, error=error,
+                           topic=topic, minutes=minutes)
+
+
 @app.route("/status")
 def status_page():
     """System Check: verifies credentials/connectivity and feature readiness."""

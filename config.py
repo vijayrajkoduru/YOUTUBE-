@@ -11,6 +11,9 @@ load_dotenv()
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 MY_CHANNEL_ID = os.getenv("MY_CHANNEL_ID")
 
+# Optional: only needed for the AI Ideas and Script tools (Claude API).
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+
 # Where the A/B test tracker saves its data.
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 

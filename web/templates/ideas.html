@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Idea Generator{% endblock %}
+{% block content %}
+<h1>💡 AI Idea Generator</h1>
+<p class="lead">Describe your niche and get video ideas with click-worthy angles.</p>
+
+<form method="post" class="stack">
+  <label>Your channel niche
+    <input type="text" name="topic" required placeholder="budget meal prep for students"
+           value="{{ topic or '' }}">
+  </label>
+  <button type="submit">Generate ideas</button>
+</form>
+
+{% if error %}
+<div class="alert warn"><strong>Couldn't generate ideas:</strong> {{ error }}</div>
+{% elif ideas %}
+<h2>Ideas for "{{ topic }}"</h2>
+<ul class="comments">
+  {% for idea in ideas %}<li>{{ idea }}</li>{% endfor %}
+</ul>
+<p class="tip">💡 Pick one, then use the <a href="{{ url_for('script_page') }}">Script</a>
+tool to draft it and the <a href="{{ url_for('seo_page') }}">SEO Generator</a> for metadata.</p>
+{% endif %}
+{% endblock %}
