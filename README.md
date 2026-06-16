@@ -15,12 +15,13 @@ It gives you four tools:
 
 ---
 
-## Why this instead of "VPN + fake views" automation?
+## Why automate the safe way?
 
-Faking views with VPNs and bot emails **gets channels permanently banned**, and
-the fake engagement actually *lowers* your reach (bots hurt your retention and
-click-through stats — the things the algorithm rewards). This toolkit improves
-the metrics that genuinely grow a channel, and nothing in it can get you banned.
+Tools that fake views or engagement **get channels permanently banned**, and the
+fake activity actually *lowers* your reach (it hurts your retention and
+click-through stats — the things the algorithm rewards). This toolkit automates
+only the legitimate work — research, metadata, and tracking — so it improves the
+metrics that genuinely grow a channel, and nothing in it can get you banned.
 
 ---
 

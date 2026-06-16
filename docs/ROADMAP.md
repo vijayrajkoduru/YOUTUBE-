@@ -7,11 +7,11 @@ bottom, then come back to it as a checklist.
 
 ## Part 1: The mindset (READ THIS FIRST)
 
-You asked originally about faking views with VPNs and fake emails. Here's the
-honest truth, and why this project does the opposite:
+This project automates the legitimate side of running a channel. Here's why that
+matters, and why shortcuts backfire:
 
 - Fake views, likes, and comments **get channels permanently banned**. YouTube's
-  systems are built specifically to detect VPN rotation and bot accounts.
+  systems are built specifically to detect bot accounts and artificial activity.
 - Fake engagement **hurts your reach** — bots don't watch ads or stay to the end,
   so your retention and click-through stats (the things the algorithm actually
   uses) get *worse*.
@@ -41,8 +41,8 @@ You're a beginner, so learn these one at a time. Don't rush.
 5. **YouTube Studio Analytics** — the Reach, Engagement, and Audience tabs.
    This is where the real decisions come from.
 
-You do NOT need to learn: VPNs, networking, web scraping, or bot frameworks.
-None of that helps a real channel.
+You do NOT need to learn: web scraping or bot frameworks. None of that helps a
+real channel.
 
 ---
 
