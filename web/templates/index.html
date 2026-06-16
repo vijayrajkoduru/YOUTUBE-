@@ -35,5 +35,22 @@
     <h3>💬 Comments</h3>
     <p>Pull a video's comments so you can reply quickly.</p>
   </a>
+  <a class="card" href="{{ url_for('analytics_page') }}">
+    <h3>📈 Analytics</h3>
+    <p>Your private watch-time and retention stats (needs login).</p>
+  </a>
+  <a class="card" href="{{ url_for('upload_page') }}">
+    <h3>⬆️ Upload</h3>
+    <p>Upload a video as private — review before it ever goes public.</p>
+  </a>
+  <a class="card" href="{{ url_for('queue_page') }}">
+    <h3>🗂️ Review Queue</h3>
+    <p>Approve and publish (or schedule) your private videos.</p>
+  </a>
 </div>
+
+{% if not logged_in %}
+<p class="tip">🔑 To enable Analytics, Upload, and Queue, log in once with
+<code>python authorize.py</code> (see <code>docs/OAUTH-SETUP.md</code>).</p>
+{% endif %}
 {% endblock %}

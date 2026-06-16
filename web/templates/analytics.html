@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<h1>📈 Private Analytics (last 28 days)</h1>
+
+{% if not logged_in %}
+<div class="alert warn">
+  <strong>Log in first.</strong> This page reads your private stats, which needs a
+  one-time Google login. Run <code>python authorize.py</code> in the terminal
+  (see <code>docs/OAUTH-SETUP.md</code>), then refresh.
+</div>
+{% elif error %}
+<div class="alert warn"><strong>Couldn't load analytics:</strong> {{ error }}</div>
+{% elif stats %}
+<div class="stat-row">
+  <div class="stat"><span>{{ "{:,}".format(stats.views) }}</span>Views</div>
+  <div class="stat"><span>{{ "{:,}".format(stats.watch_time_minutes) }}</span>Watch minutes</div>
+  <div class="stat"><span>{{ stats.avg_view_percentage }}%</span>Avg. viewed</div>
+  <div class="stat"><span>{{ "{:,}".format(stats.subscribers_gained) }}</span>New subs</div>
+</div>
+<p class="tip">💡 <strong>Average percentage viewed</strong> is your retention — the
+single most important number. If it's low, your intros or pacing need work.</p>
+
+{% if sources %}
+<h2>Where your views came from</h2>
+<table>
+  <thead><tr><th>Traffic source</th><th>Views</th></tr></thead>
+  <tbody>
+    {% for s in sources %}
+    <tr><td>{{ s.source }}</td><td>{{ "{:,}".format(s.views) }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% else %}
+<p>No analytics data yet for this period.</p>
+{% endif %}
+{% endblock %}

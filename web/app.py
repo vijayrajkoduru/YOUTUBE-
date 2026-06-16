@@ -16,19 +16,23 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 
 import config
-from src import ab_testing, seo
+from src import ab_testing, auth, seo
 
 app = Flask(__name__)
+
+# Where uploaded video files are temporarily saved before sending to YouTube.
+UPLOAD_DIR = os.path.join(ROOT, "data", "uploads")
 
 
 @app.route("/")
 def home():
     """Dashboard landing page. Shows whether setup is finished."""
     problems = config.check_setup()
-    return render_template("index.html", problems=problems)
+    return render_template("index.html", problems=problems,
+                           logged_in=auth.is_authorized())
 
 
 @app.route("/report")
@@ -109,6 +113,80 @@ def comments_page():
         "comments.html", problems=problems, comments=comments,
         error=error, video_id=video_id,
     )
+
+
+@app.route("/analytics")
+def analytics_page():
+    """Your PRIVATE channel analytics (needs OAuth login)."""
+    if not auth.is_authorized():
+        return render_template("analytics.html", logged_in=False)
+
+    error = stats = None
+    sources = []
+    try:
+        from src import analytics_api
+        stats = analytics_api.overview(days=28)
+        sources = analytics_api.traffic_sources(days=28)
+    except Exception as e:
+        error = str(e)
+    return render_template("analytics.html", logged_in=True,
+                           stats=stats, sources=sources, error=error)
+
+
+@app.route("/upload", methods=["GET", "POST"])
+def upload_page():
+    """Upload a video file as PRIVATE (the review gate). Needs OAuth login."""
+    if not auth.is_authorized():
+        return render_template("upload.html", logged_in=False)
+
+    message = error = None
+    if request.method == "POST":
+        try:
+            from src import uploader
+            file = request.files.get("video")
+            if not file or not file.filename:
+                raise ValueError("Please choose a video file.")
+            os.makedirs(UPLOAD_DIR, exist_ok=True)
+            saved = os.path.join(UPLOAD_DIR, file.filename)
+            file.save(saved)
+
+            tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
+            publish_at = uploader.to_rfc3339(request.form.get("publish_at", "").strip())
+            vid = uploader.upload_video(
+                file_path=saved,
+                title=request.form.get("title", "").strip(),
+                description=request.form.get("description", "").strip(),
+                tags=tags,
+                made_with_ai=bool(request.form.get("made_with_ai")),
+                publish_at=publish_at,
+            )
+            os.remove(saved)
+            message = (f"Uploaded as PRIVATE (id: {vid}). "
+                       "Review it in the Queue, then publish when ready.")
+        except Exception as e:
+            error = str(e)
+    return render_template("upload.html", logged_in=True, message=message, error=error)
+
+
+@app.route("/queue", methods=["GET", "POST"])
+def queue_page():
+    """Review queue: see your private/scheduled videos and publish them."""
+    if not auth.is_authorized():
+        return render_template("queue.html", logged_in=False)
+
+    error = message = None
+    videos = []
+    try:
+        from src import uploader
+        if request.method == "POST":
+            video_id = request.form.get("video_id", "").strip()
+            uploader.publish_now(video_id)
+            message = f"Published video {video_id}. It's now public."
+        videos = uploader.list_my_videos()
+    except Exception as e:
+        error = str(e)
+    return render_template("queue.html", logged_in=True,
+                           videos=videos, message=message, error=error)
 
 
 if __name__ == "__main__":

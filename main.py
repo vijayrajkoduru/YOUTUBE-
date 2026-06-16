@@ -5,7 +5,7 @@ It shows a simple menu. Pick a number and follow the prompts.
 Everything here uses YouTube's official API and is safe for your channel.
 """
 import config
-from src import analytics, ab_testing, seo, youtube_client
+from src import analytics, ab_testing, auth, seo, youtube_client
 
 
 def menu():
@@ -15,8 +15,42 @@ def menu():
     print("3. Track a thumbnail/title experiment")
     print("4. See your saved experiments")
     print("5. Read comments on a video (to reply faster)")
+    print("--- needs login (run authorize.py once) ---")
+    print("6. Private analytics (watch time + retention)")
+    print("7. Review queue (your private/scheduled videos)")
     print("0. Quit")
     return input("\nPick a number: ").strip()
+
+
+def do_analytics():
+    if not auth.is_authorized():
+        print("\nNot logged in. Run `python authorize.py` first (see docs/OAUTH-SETUP.md).")
+        return
+    from src import analytics_api
+    stats = analytics_api.overview(days=28)
+    if not stats:
+        print("\nNo analytics data yet.")
+        return
+    print(f"\nLast {stats['days']} days:")
+    print(f"  Views: {stats['views']:,}")
+    print(f"  Watch time: {stats['watch_time_minutes']:,} minutes")
+    print(f"  Avg. percentage viewed (retention): {stats['avg_view_percentage']}%")
+    print(f"  New subscribers: {stats['subscribers_gained']:,}")
+
+
+def do_queue():
+    if not auth.is_authorized():
+        print("\nNot logged in. Run `python authorize.py` first (see docs/OAUTH-SETUP.md).")
+        return
+    from src import uploader
+    videos = uploader.list_my_videos()
+    if not videos:
+        print("\nNo videos found.")
+        return
+    print("")
+    for v in videos:
+        sched = f" (scheduled {v['publish_at']})" if v["publish_at"] else ""
+        print(f"  [{v['privacy']}]{sched} {v['title']}  — id {v['video_id']}")
 
 
 def do_channel_report():
@@ -87,6 +121,8 @@ def main():
         "3": do_add_experiment,
         "4": do_list_experiments,
         "5": do_comments,
+        "6": do_analytics,
+        "7": do_queue,
     }
 
     while True:

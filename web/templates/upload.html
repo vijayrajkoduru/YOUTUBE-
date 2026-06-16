@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Upload{% endblock %}
+{% block content %}
+<h1>⬆️ Upload a Video</h1>
+
+{% if not logged_in %}
+<div class="alert warn">
+  <strong>Log in first.</strong> Uploading needs a one-time Google login. Run
+  <code>python authorize.py</code> in the terminal, then refresh.
+</div>
+{% else %}
+<div class="alert ok">
+  🔒 <strong>Review gate:</strong> every upload goes up as <strong>PRIVATE</strong>.
+  Nothing is published until you approve it in the Queue.
+</div>
+
+{% if message %}<div class="alert ok">{{ message }}</div>{% endif %}
+{% if error %}<div class="alert warn"><strong>Upload failed:</strong> {{ error }}</div>{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="stack">
+  <label>Video file
+    <input type="file" name="video" accept="video/*" required>
+  </label>
+  <label>Title
+    <input type="text" name="title" required placeholder="How to meal prep (Beginners)">
+  </label>
+  <label>Description
+    <textarea name="description" rows="5" placeholder="Paste from the SEO Generator..."></textarea>
+  </label>
+  <label>Tags (comma-separated)
+    <input type="text" name="tags" placeholder="meal prep, beginners, 2026">
+  </label>
+  <label>Schedule publish time (optional, UTC) — leave blank to keep it private
+    <input type="datetime-local" name="publish_at">
+  </label>
+  <label class="checkbox">
+    <input type="checkbox" name="made_with_ai"> This video contains AI-generated content
+  </label>
+  <button type="submit">Upload as private</button>
+</form>
+<p class="tip">💡 If you check the AI box, also toggle "Altered or synthetic content"
+in YouTube Studio — YouTube requires disclosing realistic AI-generated video.</p>
+{% endif %}
+{% endblock %}

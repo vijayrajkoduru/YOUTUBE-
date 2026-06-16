@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Review Queue{% endblock %}
+{% block content %}
+<h1>🗂️ Review Queue</h1>
+
+{% if not logged_in %}
+<div class="alert warn">
+  <strong>Log in first.</strong> Run <code>python authorize.py</code> in the
+  terminal, then refresh.
+</div>
+{% else %}
+<p class="lead">Your private and scheduled videos. Review, then publish when ready.</p>
+
+{% if message %}<div class="alert ok">{{ message }}</div>{% endif %}
+{% if error %}<div class="alert warn"><strong>Error:</strong> {{ error }}</div>{% endif %}
+
+{% if videos %}
+<table>
+  <thead><tr><th>Title</th><th>Status</th><th>Scheduled for</th><th></th></tr></thead>
+  <tbody>
+    {% for v in videos %}
+    <tr>
+      <td>{{ v.title }}</td>
+      <td>{{ v.privacy }}</td>
+      <td>{{ v.publish_at or "—" }}</td>
+      <td>
+        {% if v.privacy != "public" %}
+        <form method="post" style="margin:0">
+          <input type="hidden" name="video_id" value="{{ v.video_id }}">
+          <button type="submit">Publish now</button>
+        </form>
+        {% else %}✅ live{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No videos yet. Upload one from the Upload page.</p>
+{% endif %}
+{% endif %}
+{% endblock %}
