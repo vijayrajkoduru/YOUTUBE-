@@ -3,8 +3,9 @@
 {% block content %}
 <h1>Review Queue</h1>
 <p class="muted">
-  Nothing posts or spends until you approve it. Approve to hand the asset to the
-  publishing worker; reject to discard.
+  Nothing posts or spends until you approve it. Edit the caption / networks
+  (videos) or title / HTML / targets (blogs), then approve to hand the asset to
+  the publishing worker. Reject to discard.
 </p>
 
 {% if drafts %}
@@ -18,28 +19,72 @@
     </div>
 
     {% if a.kind == 'video' %}
-      <div class="review-body">
-        {% if a.video_path %}
-        <video class="preview-video" controls>
-          <source src="/media/{{ a.id }}" type="video/mp4" />
-          Your browser cannot play this preview.
-        </video>
-        <div class="muted">Cost: ${{ '%.2f'|format(a.cost or 0) }}</div>
-        {% else %}
-        <div class="muted">No video file (generation may have failed).</div>
-        {% endif %}
-      </div>
+      <form method="post" action="/review/{{ a.id }}/approve" class="review-form">
+        <div class="review-body">
+          {% if a.video_path %}
+          <video class="preview-video" controls>
+            <source src="/media/{{ a.id }}" type="video/mp4" />
+            Your browser cannot play this preview.
+          </video>
+          <div class="muted">
+            Stitched video. Cost: ${{ '%.2f'|format(a.cost or 0) }}
+            {% if a.scenes %} - {{ a.scenes|length }} scenes{% endif %}
+          </div>
+          {% else %}
+          <div class="muted">No video file (generation may have failed).</div>
+          {% endif %}
+        </div>
+
+        <label class="field-label" for="caption-{{ a.id }}">Caption</label>
+        <textarea id="caption-{{ a.id }}" name="caption" class="edit-area" rows="3">{{ a.caption or a.title or '' }}</textarea>
+
+        <div class="field-label">Networks</div>
+        <div class="check-row">
+          {% for net in all_networks %}
+          <label class="check">
+            <input type="checkbox" name="networks" value="{{ net }}"
+              {% if (a.networks and net in a.networks) or (not a.networks) %}checked{% endif %} />
+            {{ net }}
+          </label>
+          {% endfor %}
+        </div>
+
+        <div class="review-actions">
+          <button class="btn btn-primary" type="submit">Approve and Publish</button>
+        </div>
+      </form>
     {% else %}
-      <div class="review-body blog-preview">
-        {{ a.blog_html | safe }}
-      </div>
+      <form method="post" action="/review/{{ a.id }}/approve" class="review-form">
+        <label class="field-label" for="title-{{ a.id }}">Title</label>
+        <input id="title-{{ a.id }}" name="title" class="input" type="text" value="{{ a.title or '' }}" />
+
+        <label class="field-label" for="html-{{ a.id }}">HTML body</label>
+        <textarea id="html-{{ a.id }}" name="html" class="edit-area edit-html" rows="12">{{ a.blog_html or '' }}</textarea>
+
+        <details class="blog-preview-wrap">
+          <summary class="muted">Preview rendered HTML</summary>
+          <div class="review-body blog-preview">{{ a.blog_html | safe }}</div>
+        </details>
+
+        <div class="field-label">Targets</div>
+        <div class="check-row">
+          {% for tgt in all_blog_targets %}
+          <label class="check">
+            <input type="checkbox" name="targets" value="{{ tgt }}"
+              {% if (a.targets and tgt in a.targets) or (not a.targets) %}checked{% endif %} />
+            {{ tgt }}
+          </label>
+          {% endfor %}
+        </div>
+
+        <div class="review-actions">
+          <button class="btn btn-primary" type="submit">Approve and Publish</button>
+        </div>
+      </form>
     {% endif %}
 
     <div class="review-actions">
-      <form method="post" action="/review/{{ a.id }}/approve" style="display:inline">
-        <button class="btn btn-primary" type="submit">Approve</button>
-      </form>
-      <form method="post" action="/review/{{ a.id }}/reject" style="display:inline">
+      <form method="post" action="/review/{{ a.id }}/reject">
         <button class="btn btn-danger" type="submit">Reject</button>
       </form>
     </div>

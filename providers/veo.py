@@ -13,14 +13,50 @@ import config
 import db
 
 
-# Minimal valid MP4 (ftyp + empty moov) so a browser <video> element can load
-# the placeholder without erroring. Not a real playable clip -- it is a marker.
+# Minimal MP4 (ftyp + empty moov). Kept only as a last-resort fallback: it loads
+# in a browser <video> element but has NO video track, so moviepy cannot stitch
+# it. The DRY_RUN branch prefers a REAL tiny clip (see _write_placeholder_clip).
 _PLACEHOLDER_MP4 = bytes.fromhex(
     "0000001c66747970"  # box size 28, 'ftyp'
     "69736f6d0000020069736f6d69736f32"  # major 'isom', minor, compat brands
     "0000000c6d6f6f76"  # box size 12, 'moov' (empty)
     "00000000"
 )
+
+
+def _write_placeholder_clip(out_path, seconds=1):
+    """Write a REAL playable 1s color mp4 to out_path using moviepy.
+
+    The DRY_RUN placeholder must be a valid mp4 with an actual video track so
+    the downstream stitch (providers.video_pipeline.build_video) can read and
+    concatenate it. We render a tiny solid-color clip at low fps to keep it
+    cheap. Returns True on success. Never raises -- on any failure it falls
+    back to the minimal-bytes marker so DRY_RUN stays unbreakable.
+    """
+    try:
+        from moviepy import ColorClip
+
+        # 320x180 solid slate clip, short and low fps -> tiny + fast to encode.
+        dur = max(1, int(seconds))
+        clip = ColorClip(size=(320, 180), color=(20, 24, 28))
+        clip = clip.with_duration(dur).with_fps(8)
+        try:
+            clip.write_videofile(
+                out_path,
+                codec="libx264",
+                audio=False,
+                logger=None,
+            )
+        finally:
+            clip.close()
+        return True
+    except Exception:  # noqa: BLE001  (DRY_RUN must never raise)
+        try:
+            with open(out_path, "wb") as fh:
+                fh.write(_PLACEHOLDER_MP4)
+        except Exception:  # noqa: BLE001
+            pass
+        return False
 
 
 # Per-second USD rate lookup by model. veo-3.1-fast at 720p is the default
@@ -81,10 +117,11 @@ def generate_video(prompt, seconds=8, out_dir=None):
     ts = int(time.time() * 1000)
     out_path = os.path.join(out_dir, f"clip_{ts}.mp4")
 
-    # --- DRY_RUN or no key: placeholder, zero spend ------------------------
+    # --- DRY_RUN or no key: REAL tiny placeholder clip, zero spend ---------
+    # Render a valid 1s color mp4 (not just a marker) so the stitch step can
+    # actually concatenate the placeholders. Never spends, never raises.
     if config.DRY_RUN or not config.GOOGLE_API_KEY:
-        with open(out_path, "wb") as fh:
-            fh.write(_PLACEHOLDER_MP4)
+        _write_placeholder_clip(out_path, seconds=1)
         return {"path": out_path, "cost": 0.0}
 
     # --- Real generation: enforce the cost guard BEFORE anything else ------

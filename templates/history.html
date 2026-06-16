@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}History - Content Engine{% endblock %}
+{% block content %}
+<h1>History</h1>
+<p class="muted">
+  Posted and failed assets with their per-target results. In DRY_RUN each target
+  shows "DRY_RUN (not sent)" because nothing was actually published.
+</p>
+
+{% if assets %}
+<section class="history-list">
+  {% for a in assets %}
+  <div class="card history-item">
+    <div class="review-head">
+      <span class="status status-{{ a.status }}">{{ a.status }}</span>
+      <span class="kind-tag">{{ a.kind }}</span>
+      <span class="review-title">{{ a.title }}</span>
+    </div>
+
+    {% if a.kind == 'video' and a.video_path %}
+    <div class="muted small">Caption: {{ a.caption or a.title }}</div>
+    {% endif %}
+
+    {% if a.status == 'failed' and a.error %}
+    <div class="error-box">{{ a.error }}</div>
+    {% endif %}
+
+    {% if a.post_result %}
+    <table class="table result-table">
+      <thead><tr><th>Target</th><th>Result</th></tr></thead>
+      <tbody>
+        {% for target, res in a.post_result.items() %}
+        <tr>
+          <td>{{ target }}</td>
+          <td>
+            {% set r = res|string %}
+            {% if r.startswith('http://') or r.startswith('https://') %}
+            <a href="{{ r }}" target="_blank" rel="noopener">{{ r }}</a>
+            {% elif r.startswith('FAILED') %}
+            <span class="status status-failed">{{ r }}</span>
+            {% else %}
+            {{ r }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="muted small">No per-target results recorded.</div>
+    {% endif %}
+
+    <div class="muted small">Updated: {{ a.updated_at }}</div>
+  </div>
+  {% endfor %}
+</section>
+{% else %}
+<p class="muted">No posted or failed assets yet. Approve a draft from
+  <a href="/review">Review</a> to publish it.</p>
+{% endif %}
+{% endblock %}

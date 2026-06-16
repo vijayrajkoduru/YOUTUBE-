@@ -5,3 +5,6 @@ python-multipart
 google-genai
 requests
 python-dotenv
+moviepy>=2.0.0
+imageio-ffmpeg
+Pillow

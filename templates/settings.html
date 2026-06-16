@@ -14,6 +14,31 @@
 </p>
 <p class="muted">Set DRY_RUN in your .env file (default true).</p>
 
+<h2>Go-live checklist</h2>
+{% if ready %}
+<div class="notice notice-ok">All integrations configured and DRY_RUN is off. You are live.</div>
+{% else %}
+<p class="muted">Each integration below shows whether it is ready and exactly what is still needed.</p>
+{% endif %}
+<table class="table checklist">
+  <thead><tr><th>Integration</th><th>Status</th><th>What is needed</th></tr></thead>
+  <tbody>
+    {% for row in checklist %}
+    <tr>
+      <td>{{ row.name }}</td>
+      <td>
+        {% if row.ok %}
+        <span class="status status-posted">ready</span>
+        {% else %}
+        <span class="status status-failed">not ready</span>
+        {% endif %}
+      </td>
+      <td class="muted">{{ row.missing if row.missing else '-' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
 <h2>Keys configured</h2>
 <section class="keys">
   {% for name, ok in keys.items() %}

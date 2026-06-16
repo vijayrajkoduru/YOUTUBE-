@@ -12,11 +12,11 @@
 {% endif %}
 
 <section class="grid">
-  <div class="card stat"><div class="stat-num">{{ counts.draft }}</div><div class="stat-label">Draft</div></div>
-  <div class="card stat"><div class="stat-num">{{ counts.approved }}</div><div class="stat-label">Approved</div></div>
-  <div class="card stat"><div class="stat-num">{{ counts.posted }}</div><div class="stat-label">Posted</div></div>
+  <a class="card stat" href="/review"><div class="stat-num">{{ counts.draft }}</div><div class="stat-label">Draft</div></a>
+  <a class="card stat" href="/review"><div class="stat-num">{{ counts.approved }}</div><div class="stat-label">Approved</div></a>
+  <a class="card stat" href="/history"><div class="stat-num">{{ counts.posted }}</div><div class="stat-label">Posted</div></a>
   <div class="card stat"><div class="stat-num">{{ counts.rejected }}</div><div class="stat-label">Rejected</div></div>
-  <div class="card stat"><div class="stat-num">{{ counts.failed }}</div><div class="stat-label">Failed</div></div>
+  <a class="card stat" href="/history"><div class="stat-num">{{ counts.failed }}</div><div class="stat-label">Failed</div></a>
   <div class="card stat"><div class="stat-num">{{ total }}</div><div class="stat-label">Total</div></div>
 </section>
 

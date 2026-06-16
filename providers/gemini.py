@@ -105,6 +105,54 @@ def _mock_blog(topic):
     }
 
 
+def _mock_scenes(topic, n):
+    """Return n {"prompt","narration"} scene dicts for the given topic."""
+    topic = (topic or "this topic").strip().rstrip(".") or "this topic"
+    templates = [
+        {
+            "prompt": (
+                f"Cinematic opening shot, slow push-in on a modern desk setup at "
+                f"golden hour, soft bokeh, a glowing screen showing the words about "
+                f"{topic}, shallow depth of field, 4k, photorealistic."
+            ),
+            "narration": f"Here is what nobody tells you about {topic}.",
+        },
+        {
+            "prompt": (
+                f"Dynamic mid shot, hands typing fast on a mechanical keyboard, "
+                f"close macro on the keys, cool blue rim light, subtle motion blur, "
+                f"illustrating the core idea behind {topic}, 4k, photorealistic."
+            ),
+            "narration": f"It starts with one simple shift in how you think about {topic}.",
+        },
+        {
+            "prompt": (
+                f"Sweeping aerial-style camera move over a stylised data landscape, "
+                f"floating UI panels and charts animating, clean tech aesthetic, "
+                f"teal and orange palette, representing the impact of {topic}, 4k."
+            ),
+            "narration": f"And that is exactly why {topic} is changing everything right now.",
+        },
+        {
+            "prompt": (
+                f"Confident closing shot, a creator facing the camera in a softly lit "
+                f"studio, warm tones, slight slow-motion, gesturing toward the viewer, "
+                f"a call-to-action energy about {topic}, 4k, photorealistic."
+            ),
+            "narration": f"Try {topic} this week, and follow for more like this.",
+        },
+    ]
+    out = []
+    i = 0
+    while len(out) < n:
+        item = dict(templates[i % len(templates)])
+        if i >= len(templates):
+            item["prompt"] = f"{item['prompt']} Variation {i // len(templates) + 1}."
+        out.append(item)
+        i += 1
+    return out[:n]
+
+
 def _client():
     """Build a google-genai client, or None if unavailable."""
     try:
@@ -222,6 +270,80 @@ def write_blog(topic):
     except Exception as exc:
         log.warning("write_blog: real call failed (%s); using mock data.", exc)
         return _mock_blog(topic)
+
+
+def generate_scenes(topic, n_scenes=4):
+    """Return a list of n_scenes {"prompt","narration"} scene dicts.
+
+    Each "prompt" is an English Veo video-generation prompt describing one
+    ~8 second scene; each "narration" is the spoken line for that scene.
+    Stitching these clips together produces one multi-scene video.
+
+    Like generate_topics, this uses the real (free) Gemini text API whenever
+    GOOGLE_API_KEY is set; DRY_RUN does NOT force mock here (text is free --
+    DRY_RUN only gates paid Veo generation and external posting). On any
+    error it falls back to a sensible mock list of n_scenes scenes.
+    """
+    try:
+        n_scenes = int(n_scenes)
+    except Exception:
+        n_scenes = 4
+    if n_scenes < 1:
+        n_scenes = 1
+
+    if not config.GOOGLE_API_KEY:
+        return _mock_scenes(topic, n_scenes)
+
+    client = _client()
+    if client is None:
+        return _mock_scenes(topic, n_scenes)
+
+    try:
+        prompt = (
+            f'Break the short-form video idea "{topic}" into a storyboard of exactly '
+            f"{n_scenes} sequential scenes. Each scene is about 8 seconds long, and "
+            f"together they form one coherent narrative. "
+            f"Return STRICT JSON: a JSON array of {n_scenes} objects, each with exactly "
+            f'the keys "prompt" and "narration". '
+            f'"prompt" must be a vivid English text-to-video generation prompt suitable '
+            f"for Google Veo, describing the camera, subject, lighting, mood and motion "
+            f"for that single 8-second scene (no spoken words inside the prompt). "
+            f'"narration" must be the single spoken line for that scene, short enough to '
+            f"say in about 8 seconds. "
+            f"Respond with ONLY the JSON array, no markdown fences, no commentary."
+        )
+        resp = client.models.generate_content(
+            model=config.GEMINI_TEXT_MODEL,
+            contents=prompt,
+        )
+        text = (getattr(resp, "text", "") or "").strip()
+        data = _parse_json(text)
+        if isinstance(data, dict):
+            # Model sometimes wraps the list, e.g. {"scenes": [...]}.
+            data = _first_list(data)
+        if not isinstance(data, list):
+            raise ValueError("model output was not a JSON list of scenes")
+        cleaned = []
+        for item in data:
+            if not isinstance(item, dict):
+                continue
+            scene_prompt = str(item.get("prompt", "")).strip()
+            narration = str(item.get("narration", "")).strip()
+            if not scene_prompt:
+                continue
+            cleaned.append({"prompt": scene_prompt, "narration": narration})
+            if len(cleaned) >= n_scenes:
+                break
+        if not cleaned:
+            raise ValueError("no usable scenes parsed from model output")
+        # Pad with mock scenes if the model returned too few.
+        if len(cleaned) < n_scenes:
+            extra = _mock_scenes(topic, n_scenes)[len(cleaned):]
+            cleaned.extend(extra)
+        return cleaned[:n_scenes]
+    except Exception as exc:
+        log.warning("generate_scenes: real call failed (%s); using mock data.", exc)
+        return _mock_scenes(topic, n_scenes)
 
 
 def _strip_code_fence(text):
