@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Review - Content Engine{% endblock %}
+{% block content %}
+<h1>Review Queue</h1>
+<p class="muted">
+  Nothing posts or spends until you approve it. Approve to hand the asset to the
+  publishing worker; reject to discard.
+</p>
+
+{% if drafts %}
+<section class="review-list">
+  {% for a in drafts %}
+  <div class="card review-item">
+    <div class="review-head">
+      <span class="status status-draft">draft</span>
+      <span class="kind-tag">{{ a.kind }}</span>
+      <span class="review-title">{{ a.title }}</span>
+    </div>
+
+    {% if a.kind == 'video' %}
+      <div class="review-body">
+        {% if a.video_path %}
+        <video class="preview-video" controls>
+          <source src="/media/{{ a.id }}" type="video/mp4" />
+          Your browser cannot play this preview.
+        </video>
+        <div class="muted">Cost: ${{ '%.2f'|format(a.cost or 0) }}</div>
+        {% else %}
+        <div class="muted">No video file (generation may have failed).</div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="review-body blog-preview">
+        {{ a.blog_html | safe }}
+      </div>
+    {% endif %}
+
+    <div class="review-actions">
+      <form method="post" action="/review/{{ a.id }}/approve" style="display:inline">
+        <button class="btn btn-primary" type="submit">Approve</button>
+      </form>
+      <form method="post" action="/review/{{ a.id }}/reject" style="display:inline">
+        <button class="btn btn-danger" type="submit">Reject</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+{% else %}
+<p class="muted">No drafts awaiting review. Create one from
+  <a href="/topics">Topics</a> or <a href="/blogs">Blogs</a>.</p>
+{% endif %}
+{% endblock %}

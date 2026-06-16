@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Content Engine{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+
+{% if dry_run %}
+<div class="notice notice-dry">
+  DRY_RUN is ON. The engine is fully usable with zero keys: Veo returns a
+  placeholder clip and all publishing is logged only. Set DRY_RUN=false and add
+  keys to go live.
+</div>
+{% endif %}
+
+<section class="grid">
+  <div class="card stat"><div class="stat-num">{{ counts.draft }}</div><div class="stat-label">Draft</div></div>
+  <div class="card stat"><div class="stat-num">{{ counts.approved }}</div><div class="stat-label">Approved</div></div>
+  <div class="card stat"><div class="stat-num">{{ counts.posted }}</div><div class="stat-label">Posted</div></div>
+  <div class="card stat"><div class="stat-num">{{ counts.rejected }}</div><div class="stat-label">Rejected</div></div>
+  <div class="card stat"><div class="stat-num">{{ counts.failed }}</div><div class="stat-label">Failed</div></div>
+  <div class="card stat"><div class="stat-num">{{ total }}</div><div class="stat-label">Total</div></div>
+</section>
+
+<h2>Keys configured</h2>
+<section class="keys">
+  {% for name, ok in keys.items() %}
+  <span class="pill {{ 'pill-on' if ok else 'pill-off' }}">{{ name }}: {{ 'set' if ok else 'not set' }}</span>
+  {% endfor %}
+</section>
+
+<h2>Recent assets</h2>
+{% if recent %}
+<table class="table">
+  <thead><tr><th>ID</th><th>Kind</th><th>Title</th><th>Status</th><th>Cost</th></tr></thead>
+  <tbody>
+    {% for a in recent %}
+    <tr>
+      <td>{{ a.id }}</td>
+      <td>{{ a.kind }}</td>
+      <td>{{ a.title }}</td>
+      <td><span class="status status-{{ a.status }}">{{ a.status }}</span></td>
+      <td>${{ '%.2f'|format(a.cost or 0) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">No assets yet. Start at <a href="/topics">Topics</a>.</p>
+{% endif %}
+{% endblock %}

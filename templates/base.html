@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Content Engine{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Content Engine</div>
+    <nav class="nav">
+      <a href="/">Dashboard</a>
+      <a href="/topics">Topics</a>
+      <a href="/review">Review</a>
+      <a href="/blogs">Blogs</a>
+      <a href="/settings">Settings</a>
+    </nav>
+    {% if dry_run %}
+    <span class="badge badge-dry">DRY-RUN</span>
+    {% else %}
+    <span class="badge badge-live">LIVE</span>
+    {% endif %}
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    Nothing posts or spends without explicit approval.
+    {% if dry_run %}DRY_RUN is ON: all publishing is logged only, no keys required.{% endif %}
+  </footer>
+</body>
+</html>

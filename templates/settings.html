@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Settings - Content Engine{% endblock %}
+{% block content %}
+<h1>Settings</h1>
+
+<h2>Mode</h2>
+<p>
+  DRY_RUN:
+  {% if dry_run %}
+  <span class="status status-draft">ON (nothing posts or spends)</span>
+  {% else %}
+  <span class="status status-posted">OFF (LIVE)</span>
+  {% endif %}
+</p>
+<p class="muted">Set DRY_RUN in your .env file (default true).</p>
+
+<h2>Keys configured</h2>
+<section class="keys">
+  {% for name, ok in keys.items() %}
+  <span class="pill {{ 'pill-on' if ok else 'pill-off' }}">{{ name }}: {{ 'set' if ok else 'not set' }}</span>
+  {% endfor %}
+</section>
+
+<h2>Veo cost guard</h2>
+<table class="table">
+  <tbody>
+    <tr><td>Model</td><td>{{ veo_model }}</td></tr>
+    <tr>
+      <td>This month spend</td>
+      <td>${{ '%.2f'|format(month_cost) }} / ${{ '%.2f'|format(monthly_cap) }} cap</td>
+    </tr>
+    <tr>
+      <td>Today clips</td>
+      <td>{{ day_clips }} / {{ daily_cap }} cap</td>
+    </tr>
+  </tbody>
+</table>
+<p class="muted">
+  When DRY_RUN is off, Veo generation is blocked if either cap would be exceeded.
+</p>
+{% endblock %}

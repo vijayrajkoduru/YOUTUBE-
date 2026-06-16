@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Blogs - Content Engine{% endblock %}
+{% block content %}
+<h1>Generate a Blog</h1>
+<p class="muted">
+  Enter a topic. The engine drafts a full blog post (real Gemini when
+  GOOGLE_API_KEY is set, otherwise mock) and sends it to the review queue.
+  On approval it publishes to WordPress (canonical) plus Dev.to and Hashnode.
+</p>
+
+<form method="post" action="/blogs/generate" class="blog-form">
+  <input class="input" type="text" name="topic" placeholder="e.g. Why AI agents are replacing dashboards" required />
+  <button class="btn btn-primary" type="submit">Generate Blog Draft</button>
+</form>
+{% endblock %}

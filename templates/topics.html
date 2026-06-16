@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Topics - Content Engine{% endblock %}
+{% block content %}
+<h1>Trending Topics</h1>
+<p class="muted">
+  Generate trending topics, then pick one to turn into a video. Topic text uses
+  the real Gemini API when GOOGLE_API_KEY is set, otherwise realistic mock data.
+</p>
+
+<form method="post" action="/topics/generate">
+  <button class="btn btn-primary" type="submit">Generate Topics</button>
+</form>
+
+{% if topics is not none %}
+  {% if topics %}
+  <section class="topic-list">
+    {% for t in topics %}
+    <div class="card topic">
+      <div class="topic-title">{{ t.title }}</div>
+      <div class="topic-hook">{{ t.hook }}</div>
+      <div class="topic-why muted">{{ t.why }}</div>
+      <form method="post" action="/topics/select" class="topic-actions">
+        <input type="hidden" name="title" value="{{ t.title }}" />
+        <input type="hidden" name="hook" value="{{ t.hook }}" />
+        <button class="btn" type="submit">Select and make video</button>
+      </form>
+    </div>
+    {% endfor %}
+  </section>
+  {% else %}
+  <p class="muted">No topics returned. Try again.</p>
+  {% endif %}
+{% endif %}
+{% endblock %}
